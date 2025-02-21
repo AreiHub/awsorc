@@ -27,22 +27,31 @@ Pour commencer, nous allons créer un VPC. Dans celui-ci, on créera **deux subn
 Le premier sera un **public subnet**, dans lequel on aura l'application et le stockage statique.
 Dans le deuxieme, on aura un **private subnet**, et on y mettra notre base de données RDS et le serveur de test.
 
+<div align="center">
+    <img src="examen\vpc_create_1.png" alt="vpc_create">
+</div>
 
-![VPC_CREATE](examen\vpc_create_1.png)
-![passerelle](examen\vpc_create_2.png)
+<div align="center">
+    <img src="examen\vpc_create_2.png" alt="vpc_creat2">
+</div>
 
 Pour la création du VPC, on a gardé la Passerelle S3 car on en aura besoin pour le stockage statique. Et on a aussi choisi de prendre une zone de disponibilité pour la passerelle NAT.
 
-![vpc_vu](images\vpc_vu.png)
+<div align="center">
+    <img src="images\vpc_vu.png" alt="vpc_vu">
+</div>
 
 Ensuite on crée notre passerelle NAT attachée a notre VPC pour que notre serveur de test, qui n'a pas d'adresse IP Public, pourra tout de même avoir accès à internet.
 
-![NAT](images\nat_passerelle.png)
+<div align="center">
+    <img src="images\nat_passerelle.png" alt="NAT">
+</div>
 
 On met notre passerelle NAT et Internet dans le subnet Public. Mais on va mettre, dans la table de routage du private, un chemin vers la passerelle NAT pour avoir accès.
 
-![NAT](images\natgatepreuve.png)
-
+<div align="center">
+    <img src="images\natgatepreuve.png" alt="NAT">
+</div>
 
 
 #### Pour résumer, dans cette partie, on a : 
@@ -63,7 +72,7 @@ On va déployer 2 instances. La premiere sera celle qui sera dans la public subn
 
 Pour la création de notre instance, j'ai mis comme nom "olivieri_app" avec comme démarrage, un serveur **Ubuntu**. J'ai crée une nouvelle clé unique "cleexamen". Pour les parametres réseaux, je lui ai donné le VPC qu'on a crée juste avant, le sous réseau public, et j'ai activé l'adresse IP Publique : 
 
-![ec2_app_create](examen\instance_app.png)
+<div align="center"> <img src="examen\instance_app.png" alt="ec2_app_create"> </div>
 
 De plus, je lui ai déjà donnée les groupes et regles de sécurités. J'ai donné : 
 - SSH, qui est obligatoire pour avoir accès à notre app.
@@ -71,7 +80,7 @@ De plus, je lui ai déjà donnée les groupes et regles de sécurités. J'ai don
 - MySQL : Pour pouvoir avoir accès à notre base de donnée.
 - Port 5085 : pour mon application
 
-![regle_secu](examen\groupesecu_app.png)
+<div align="center"> <img src="examen\groupesecu_app.png" alt="regle_secu"> </div>
 
 Je lui ai mis à la fin une config, afin de le configurer plus facilement.
 
@@ -105,7 +114,7 @@ runcmd:
 ```
 J'ai crée en parallele mon instance "examen_servertest" pour le serveur de test. Dans celui-ci, on lui donnera un sous réseau privé, et on desactivera l'adresse Ip Publique
 
-![srv_test_config](images\srv_test_config.png)
+<div align="center"> <img src="images\srv_test_config.png" alt="srv_test_config"> </div>
 
 #### Pour résumer, dans cette partie, on a : 
 - Créer notre instance pour l'application avec :
@@ -144,8 +153,7 @@ Host examen
     IdentityFile C:\Users\nom\Downloads\cleexamen.pem
 ```
 
-![ssh](examen\connexion_ssh.png)
-
+<div align="center"> <img src="examen\connexion_ssh.png" alt="ssh"> </div>
 J'ai ensuite mis mon application : 
 
 ```bash	
@@ -185,7 +193,7 @@ mysqlclient
 
 Avant de me connecter à ma base de données, je test si j'ai accès à mon site sur internet, et c'est le cas :
 
-![app](examen\acces_app.png)
+<div align="center"> <img src="examen\acces_app.png" alt="app"> </div>
 
 Maintenant on va essayer de relier la base de données et d'enregistrer une modification.
 
@@ -198,11 +206,11 @@ mysql -h id-examen.czcc4yewi3vy.us-west-1.rds.amazonaws.com -u admin -p
 
 On a bien accès à notre base depuis l'application : 
 
-![sqlapp](examen\sql_app.png)
+<div align="center"> <img src="examen\sql_app.png" alt="sqlapp"> </div>
 
 Suite à ça, on va essayer de voir si on modifie l'application, est ce que on aura une modification dans la base, c'est à dire, est ce qu'on aura de nouvelles tables dans notre base 'examen'
 
-![sqlapp](examen\app_bdd_co.png)
+<div align="center"> <img src="examen\app_bdd_co.png" alt="sqlapp"> </div>
 La réponse est oui, on a donc bien le lien entre l'application et la base de données.
 
 ### Connexion à notre servertest
@@ -223,9 +231,7 @@ chmod 400 cleexamen.pem
 ssh -i cleexamen.pem ubuntu@10.0.152.91
 sudo apt update
 ```
-
-![sqlapp](examen\servertest_preuve_internet.png)
-
+<div align="center"> <img src="examen\servertest_preuve_internet.png" alt="sqlapp"> </div>
 #### Création du Bucket pour un site web statique
 ---
 
@@ -233,10 +239,10 @@ Ici je peux créer mon Bucket pour un site web statique. Pour ce faire je vais c
 examen-docu-olivieri, dans celui ci, je débloque tous les acces pour qu'il soit public, et j'active les ACL.
 Ensuite, dans liste de controle ACL (liste des controles d'acces), je confirme que tout le monde peut avoir accès à la lecture. Maintenant, je peux charger mon site html, en n'oubliant pas de leur donné l'acces public au ACL.
 Ensuite, on va activer le web site statique et c'est parfait.
+<div align="center"> <img src="examen\acl_public_docu.png" alt="sqlapp"> </div>
+<div align="center"> <img src="examen\preuve_site_statique.png" alt="sqlapp"> </div>
+<div align="center"> <img src="image.png" alt="sqlapp"> </div>
 
-![srvtest1](examen\acl_public_docu.png)
-![srvtest2](examen\preuve_site_statique.png)
-![alt text](image.png)
 
 #### Backup de notre application - base de donnée
 ---
@@ -254,8 +260,8 @@ Le client souhaite ajouter une nouvelle équipe concernant le développement de 
 
 Pour commencer, je crée deux VPC dont un avec le NAT Gateway, avec dedans un serveur chacun. 
 je fais un peering entre les deux.
+<div align="center"> <img src="examen\peering.png" alt="sqlapp"> </div>
 
-![peering](examen\peering.png)
 
 Je mets dans les routables la connexion de parrainage et je crée mes deux instances. Une dans le vpc 1 en public et ma deuxieme instance dans le vpc 2 private.
 
